@@ -11,7 +11,7 @@ public class UserService {
 
 
     public String getAllUsers() {
-        return "Список пользователей и паролей:\n" + giveAllUsersFromStorage();
+        return "List users and passwords:\n" + giveAllUsersFromStorage();
     } // список всех зарегистрированных пользователей
 
 
