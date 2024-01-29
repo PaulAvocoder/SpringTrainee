@@ -1,6 +1,10 @@
 package com.galomzik.spring.service;
 
 import com.galomzik.spring.dto.User;
+import com.galomzik.spring.exceptions.BadDataException;
+import com.galomzik.spring.exceptions.ConflictException;
+import com.galomzik.spring.exceptions.NotFoundException;
+import com.galomzik.spring.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
 import static com.galomzik.spring.domainService.ContainerService.*;
@@ -10,24 +14,25 @@ import static com.galomzik.spring.domainService.ContainerService.*;
 public class UserService {
 
 
+
     public String getAllUsers() {
-        return "List users and passwords:\n" + giveAllUsersFromStorage();
-    } // список всех зарегистрированных пользователей
+        return "List of user usernames and passwords:\n" + giveAllUsersFromStorage();
+    } // просит вернуть всех юзеров
 
 
     public String signUpUser(User user) { //регистрация нового пользователя
         String usernamePossible = user.getUsername();
         String passwordPossible = user.getPassword();
         if (isUserIncorrect(usernamePossible)) { // проверка на корректность username
-            return "Username is incorrect";
+            throw new BadDataException("Username is incorrect");
         }
-        if (isUserExist(usernamePossible)) { // существует ли уже пользователь?
-            return "Oh no! The user has already been added once";
+        if (isUserExist(usernamePossible)) { // существует ли уже пользователь
+            throw new ConflictException("Oh no! The user has already been added once");
         }
         if (isPasswordIncorrectFormat(passwordPossible)) { // проверка на некорректный пароль
-            return "Password is incorrect format:(";
+            throw new BadDataException("Password is incorrect format:(");
         }
-        setPassword(usernamePossible, passwordPossible); // если все проверки пройдены то помещает в хранилище
+        setPassword(usernamePossible, passwordPossible); // если все проверки пройдены то помещает данные в хранилище
         return "User has been added:\nlogin: " + usernamePossible + "\npassword: " + passwordPossible;
     }
 
@@ -43,11 +48,20 @@ public class UserService {
     public String signInUser(User user) { //вход юзера
         String username = user.getUsername();
         String password = user.getPassword();
-
+        if (isUserIncorrect(username)) {
+            throw new BadDataException("Username is incorrect");
+        }
+        if (!isUserExist(username)) {
+            throw new NotFoundException("The user was not found");
+        }
+        if (isPasswordIncorrectFormat(password)) {
+            throw new BadDataException("Password is incorrect format:(");
+        }
         if (isPasswordMatch(username, password)) { // проверяет на совпадение пароля с хранилищем
             return "Successful login. Congratulations";
-        } else return "Wrong password";
+        } else throw new UnauthorizedException("Wrong password");
     }
+
 
 
     public String changePassword(User user) { //смена пароля
@@ -55,15 +69,24 @@ public class UserService {
         String oldPassword = user.getPassword();
         String newPassword = user.getNewPassword();
 
-
-        if (isPasswordMatch(username, oldPassword)) { // если все условия выполнены то пароль сменится
+        if (isUserIncorrect(username)) {
+            throw new BadDataException("Username is incorrect");
+        }
+        if (!isUserExist(username)) {
+            throw new NotFoundException("The user was not found");
+        }
+        if (isPasswordIncorrectFormat(oldPassword) || isPasswordIncorrectFormat(newPassword)) {
+            throw new BadDataException("Some of the Passwords in the wrong format :(");
+        }
+        if (isPasswordMatch(username, oldPassword)) {
             setPassword(username, newPassword);
             return "Password was changed successfully. Your new login details:\nusername: " + username + "\npassword: " + newPassword;
+        } else {
+            throw new UnauthorizedException("Wrong old password");
         }
-        return "Error. The password could not be changed. Please repeat";
     }
 
-    public static boolean isPasswordMatch(String username, String passwordPossible) { // метод проверяет совпадают ли пароль в хранилище с переданным паролем
+    public static boolean isPasswordMatch(String username, String passwordPossible) {
         return getPasswordFromStorage(username).equals(passwordPossible);
     }
 }
