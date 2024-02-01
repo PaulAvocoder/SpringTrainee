@@ -28,4 +28,9 @@ public class ExceptionHandlerCl {
         return ResponseEntity.status(401).body(unauthorizedException.getMessage());
     }
 
+    @ExceptionHandler
+    public ResponseEntity<String> databaseHandler(DatabaseException databaseException) {
+        return ResponseEntity.status(500).body(databaseException.getMessage());
+    }
+
 }

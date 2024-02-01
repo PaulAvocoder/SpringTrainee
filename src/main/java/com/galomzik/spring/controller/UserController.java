@@ -1,6 +1,6 @@
 package com.galomzik.spring.controller;
 
-import com.galomzik.spring.dto.User;
+import com.galomzik.spring.dto.*;
 import com.galomzik.spring.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,23 +17,23 @@ public class UserController {
 
 
     @GetMapping("/getAllUsers")
-    public ResponseEntity<String> getAllUsers() {
+    public ResponseEntity<String> getAllUsersFromDB() {
         return ResponseEntity.ok(userService.getAllUsers());
     } // делегирует запрос сервису
 
   @PostMapping("/signUpUser") //регистрация юзера
-   public ResponseEntity<String> signUpUser(@RequestBody User user) { // образует контейнер данных пользователя и передает сервису
+   public ResponseEntity<String> signUpUserForDB(@RequestBody UserDTO user) { // образует контейнер данных пользователя и передает сервису
        return ResponseEntity.status(201).body(userService.signUpUser(user));
    }
 
     @PostMapping("/signInUser") //вход юзера
-    public ResponseEntity<String> signInUser(@RequestBody User user) { // образует контейнер данных пользователя и передает сервису
+    public ResponseEntity<String> signInUserForBD(@RequestBody UserDTO user) { // образует контейнер данных пользователя и передает сервису
         return ResponseEntity.ok(userService.signInUser(user));
     }
 
     @PostMapping("/changePassword") //смена пароля
-    public ResponseEntity<String> changePassword(@RequestBody User user) { // образует контейнер данных пользователя и передает сервису
-        return ResponseEntity.ok(userService.changePassword(user));
+    public ResponseEntity<String> changePasswordFromBD(@RequestBody ChangePswdDTO changePasswordDTO) { // образует контейнер данных пользователя и передает сервису
+        return ResponseEntity.ok(userService.changePassword(changePasswordDTO));
     }
 
 }
