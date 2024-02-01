@@ -1,4 +1,4 @@
-package com.galomzik.spring.exceptions;
+package com.galomzik.spring.exception;
 
 public class ConflictException extends RuntimeException{
     public ConflictException(String message) {

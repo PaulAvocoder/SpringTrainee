@@ -1,10 +1,10 @@
 package com.galomzik.spring.service;
 
 import com.galomzik.spring.dto.User;
-import com.galomzik.spring.exceptions.BadDataException;
-import com.galomzik.spring.exceptions.ConflictException;
-import com.galomzik.spring.exceptions.NotFoundException;
-import com.galomzik.spring.exceptions.UnauthorizedException;
+import com.galomzik.spring.exception.BadDataException;
+import com.galomzik.spring.exception.ConflictException;
+import com.galomzik.spring.exception.NotFoundException;
+import com.galomzik.spring.exception.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
 import static com.galomzik.spring.domainService.ContainerService.*;

@@ -1,4 +1,4 @@
-package com.galomzik.spring.exceptions;
+package com.galomzik.spring.exception;
 
 public class NotFoundException extends RuntimeException{
     public NotFoundException(String message) {
