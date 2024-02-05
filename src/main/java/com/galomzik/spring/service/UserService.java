@@ -25,7 +25,7 @@ public class UserService{
     private final UserRepository userRepository;
 
     public String getAllUsers() {
-        List<UserEntity> userEntityList = userRepository.getAllUsersFromBd();
+        List<UserEntity> userEntityList = userRepository.findAll();
         List<UserDTO> userDTOList = new ArrayList<>();
         for(UserEntity userEntity: userEntityList){
             UserDTO userDTO = new UserDTO();
@@ -37,9 +37,9 @@ public class UserService{
     } // просит вернуть всех юзеров класс, работающий с хранилищем
 
     public String signUpUser(UserDTO user) { //регистрация нового пользователя
-        String usernamePossible = user.getUsername(); //получает из контейнера данные
+        String usernamePossible = user.getUsername();
         String passwordPossible = user.getPassword();
-        if (isUserIncorrect(usernamePossible)) { // проверка на корректность username, если не прошел проверку то соответственный мессаж
+        if (isUserIncorrect(usernamePossible)) { // проверка на корректность username
             throw new BadDataException("Username is incorrect");
         }
         if (isUserExist(usernamePossible)) { // существует ли уже пользователь в контейнере?
@@ -48,9 +48,13 @@ public class UserService{
         if (isPasswordIncorrectFormat(passwordPossible)) { // проверка на некорректный пароль
             throw new BadDataException("Password is incorrect format:(");
         }
-        userRepository.saveOrUpdateUser(usernamePossible, passwordPossible); // если все проверки пройдены то помещает данные в хранилище через спецкласс
+        UserEntity userEntity = new UserEntity();
+        userEntity.setUsername(usernamePossible);
+        userEntity.setPassword(passwordPossible);
+        userRepository.save(userEntity);// если все проверки пройдены то помещает данные в хранилище
         return "User has been added:\nlogin: " + usernamePossible + "\npassword: " + passwordPossible;
     }
+
 
     public static boolean isUserIncorrect(String username) {
         return username.equals("");
@@ -101,13 +105,16 @@ public class UserService{
             throw new BadDataException("Some of the Passwords in the wrong format :(");
         }
         if (isPasswordMatch(username, oldPassword)) { // если все условия выполнены то пароль сменится
-            userRepository.saveOrUpdateUser(username, newPassword);
+            UserEntity userEntity = userRepository.findByUsername(username);
+            userEntity.setPassword(newPassword);
+            userRepository.save(userEntity);
             return "Password was changed successfully. Your new login details:\nusername: " + username + "\npassword: " + newPassword;
         } else {
             throw new UnauthorizedException("Wrong old password");
         }
     }
-}
+    }
+
 
 
 
